@@ -59,3 +59,10 @@ jobs:
             git commit -m "chore: update hot news (crawl only)"
             git push
           fi
+
+      - name: Check generated report files
+        run: |
+          ls -lah index.html || true
+          ls -lah output || true
+          grep -n "生成时间" -n index.html || true
+
