@@ -39,11 +39,11 @@ jobs:
 
       - name: Run (current榜单 / no push)
         env:
-          # 不在这里注入任何推送相关 secrets
-          # 并确保 config/config.yaml 里已设为 current 模式
           TZ: Asia/Shanghai
+          GITHUB_ACTIONS: true
         run: |
-          python main.py
+          python -m trendradar
+
 
       - name: Commit generated files
         run: |
