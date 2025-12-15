@@ -1,0 +1,56 @@
+name: Push QQ Mail (BJT 10:00 & 22:00)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2,14 * * *"  # UTC 02:00/14:00 == 北京 10:00/22:00 :contentReference[oaicite:10]{index=10}
+
+jobs:
+  push_mail:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run (current榜单 + QQ邮箱推送)
+        env:
+          TZ: Asia/Shanghai
+
+          # ✅ 这里按 TrendRadar 文档/代码里要求的“邮件环境变量名”来映射 Secrets
+          # 你先在仓库 Settings → Secrets and variables → Actions 里创建它们
+          # QQ 邮箱一般用 smtp.qq.com + 465(SSL)；作者也提到 QQ/163 默认 465(SSL) :contentReference[oaicite:11]{index=11}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}   # QQ邮箱“授权码”，不是登录密码
+          MAIL_TO:   ${{ secrets.MAIL_TO }}
+        run: |
+          python main.py
+
+      - name: Commit generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update hot news (mail push)"
+            git push
+          fi
