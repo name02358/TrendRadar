@@ -3,7 +3,7 @@ name: Push QQ Mail (BJT 10:00 & 22:00)
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 2,14 * * *"  # UTC 02:00/14:00 == 北京 10:00/22:00 :contentReference[oaicite:10]{index=10}
+    - cron: "0 2,14 * * *"  # UTC 02:00/14:00 == 北京 10:00/22:00
 
 jobs:
   push_mail:
@@ -28,20 +28,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run (current榜单 + QQ邮箱推送)
+            - name: Run (current榜单 + QQ邮箱推送)
         env:
           TZ: Asia/Shanghai
+          GITHUB_ACTIONS: true
 
-          # ✅ 这里按 TrendRadar 文档/代码里要求的“邮件环境变量名”来映射 Secrets
-          # 你先在仓库 Settings → Secrets and variables → Actions 里创建它们
-          # QQ 邮箱一般用 smtp.qq.com + 465(SSL)；作者也提到 QQ/163 默认 465(SSL) :contentReference[oaicite:11]{index=11}
-          MAIL_HOST: ${{ secrets.MAIL_HOST }}
-          MAIL_PORT: ${{ secrets.MAIL_PORT }}
-          MAIL_USER: ${{ secrets.MAIL_USER }}
-          MAIL_PASS: ${{ secrets.MAIL_PASS }}   # QQ邮箱“授权码”，不是登录密码
-          MAIL_TO:   ${{ secrets.MAIL_TO }}
-        run: |
-          python main.py
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+
+          # 可选：不填也行（QQ/163等可自动识别）
+          EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
+          EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+          run: |
+            python -m trendradar
+
+
 
       - name: Commit generated files
         run: |
