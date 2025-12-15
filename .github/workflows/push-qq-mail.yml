@@ -28,7 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-            - name: Run (current榜单 + QQ邮箱推送)
+      - name: Run (current榜单 + QQ邮箱推送)
         env:
           TZ: Asia/Shanghai
           GITHUB_ACTIONS: true
@@ -40,10 +40,8 @@ jobs:
           # 可选：不填也行（QQ/163等可自动识别）
           EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
           EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
-          run: |
-            python -m trendradar
-
-
+        run: |
+          python -m trendradar
 
       - name: Commit generated files
         run: |
