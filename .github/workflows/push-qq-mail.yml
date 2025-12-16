@@ -30,16 +30,12 @@ jobs:
 
       - name: Run (current榜单 + QQ邮箱推送)
         env:
-          TZ: Asia/Shanghai
-          GITHUB_ACTIONS: true
+          EMAIL_FROM: ${{ secrets.MAIL_USER }}
+          EMAIL_PASSWORD: ${{ secrets.MAIL_PASS }}
+          EMAIL_TO: ${{ secrets.MAIL_TO }}
+          EMAIL_SMTP_SERVER: ${{ secrets.MAIL_HOST }}
+          EMAIL_SMTP_PORT: ${{ secrets.MAIL_PORT }}
 
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-
-          # 可选：不填也行（QQ/163等可自动识别）
-          EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
-          EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
         run: |
           python -m trendradar
 
